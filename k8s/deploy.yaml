@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  labels:
+    name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: app
+  template:
+    metadata:
+      labels:
+        name: app
+    spec:
+      containers:
+      - name: app
+        image: lucenabruno/demo-app:latest
+        imagePullPolicy: Always
+        args:
+        - -log.level=debug
+        - http://db
+        ports:
+        - name: http-metrics
+          containerPort: 80
+        env:
+        - name: JAEGER_AGENT_HOST
+          value: opentelemetry-collector.otel.svc.cluster.local
+        - name: JAEGER_TAGS
+          value: cluster=docker,namespace=demo
+        - name: JAEGER_SAMPLER_TYPE
+          value: const
+        - name: JAEGER_SAMPLER_PARAM
+          value: "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  labels:
+    name: db 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: db
+  template:
+    metadata:
+      labels:
+        name: db
+    spec:
+      containers:
+      - name: db
+        image: lucenabruno/demo-db:latest
+        imagePullPolicy: Always
+        args:
+        - -log.level=debug
+        ports:
+        - name: http-metrics
+          containerPort: 80
+        env:
+        - name: JAEGER_AGENT_HOST
+          value: opentelemetry-collector.otel.svc.cluster.local
+        - name: JAEGER_TAGS
+          value: cluster=docker,namespace=demo
+        - name: JAEGER_SAMPLER_TYPE
+          value: const
+        - name: JAEGER_SAMPLER_PARAM
+          value: "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgen
+  labels:
+    name: loadgen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: loadgen
+  template:
+    metadata:
+      labels:
+        name: loadgen
+    spec:
+      containers:
+      - name: loadgen
+        image: lucenabruno/demo-loadgen:latest
+        imagePullPolicy: Always
+        args:
+        - -log.level=debug
+        - http://app
+        ports:
+        - name: http-metrics
+          containerPort: 80
+        env:
+        - name: JAEGER_AGENT_HOST
+          value: opentelemetry-collector.otel.svc.cluster.local
+        - name: JAEGER_TAGS
+          value: cluster=docker,namespace=demo
+        - name: JAEGER_SAMPLER_TYPE
+          value: const
+        - name: JAEGER_SAMPLER_PARAM
+          value: "1"

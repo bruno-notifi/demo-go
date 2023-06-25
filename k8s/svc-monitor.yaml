@@ -1,0 +1,48 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: app
+spec:
+  endpoints:
+  - port: http-metrics
+    path: /metrics
+    targetPort: 80
+  namespaceSelector:
+    matchNames:
+      - demo-go
+  selector:
+    matchLabels:
+      name: app
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: db
+spec:
+  endpoints:
+  - port: http-metrics
+    path: /metrics
+    targetPort: 80
+  namespaceSelector:
+    matchNames:
+      - demo-go
+  selector:
+    matchLabels:
+      name: db
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: loadgen
+spec:
+  endpoints:
+  - port: http-metrics
+    path: /metrics
+    targetPort: 80
+  namespaceSelector:
+    matchNames:
+      - demo-go
+  selector:
+    matchLabels:
+      name: loadgen
