@@ -19,7 +19,7 @@ spec:
         image: lucenabruno/demo-app:latest
         imagePullPolicy: Always
         args:
-        - -log.level=debug
+        - -log.level=info
         - http://db
         ports:
         - name: http-metrics
@@ -28,7 +28,7 @@ spec:
         - name: JAEGER_AGENT_HOST
           value: opentelemetry-collector.otel.svc.cluster.local
         - name: JAEGER_TAGS
-          value: cluster=docker,namespace=demo
+          value: cluster=docker,namespace=demo-go
         - name: JAEGER_SAMPLER_TYPE
           value: const
         - name: JAEGER_SAMPLER_PARAM
@@ -55,7 +55,7 @@ spec:
         image: lucenabruno/demo-db:latest
         imagePullPolicy: Always
         args:
-        - -log.level=debug
+        - -log.level=info
         ports:
         - name: http-metrics
           containerPort: 80
@@ -63,7 +63,7 @@ spec:
         - name: JAEGER_AGENT_HOST
           value: opentelemetry-collector.otel.svc.cluster.local
         - name: JAEGER_TAGS
-          value: cluster=docker,namespace=demo
+          value: cluster=docker,namespace=demo-go
         - name: JAEGER_SAMPLER_TYPE
           value: const
         - name: JAEGER_SAMPLER_PARAM
@@ -90,7 +90,7 @@ spec:
         image: lucenabruno/demo-loadgen:latest
         imagePullPolicy: Always
         args:
-        - -log.level=debug
+        - -log.level=info
         - http://app
         ports:
         - name: http-metrics
@@ -99,7 +99,7 @@ spec:
         - name: JAEGER_AGENT_HOST
           value: opentelemetry-collector.otel.svc.cluster.local
         - name: JAEGER_TAGS
-          value: cluster=docker,namespace=demo
+          value: cluster=docker,namespace=demo-go
         - name: JAEGER_SAMPLER_TYPE
           value: const
         - name: JAEGER_SAMPLER_PARAM
