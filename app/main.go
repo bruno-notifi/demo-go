@@ -179,7 +179,7 @@ func (a *app) Index(w http.ResponseWriter, r *http.Request) {
 		ID:    a.id,
 		Links: response.Links,
 	}); err != nil {
-		level.Error(a.logger).Log("msg", "failed to execute template", "err", err, "traceID", traceId)
+		level.Error(a.logger).Log("msg", "failed to execute template", "err", err, "TraceId", traceId)
 	}
 }
 
@@ -187,7 +187,7 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 	traceId, _ := tracing.ExtractTraceID(r.Context())
 
 	if err := r.ParseForm(); err != nil {
-		level.Error(a.logger).Log("msg", "error parsing form", "err", err, "traceID", traceId)
+		level.Error(a.logger).Log("msg", "error parsing form", "err", err, "TraceID", traceId)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -201,7 +201,7 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 
 	parsed, err := url.Parse(u)
 	if err != nil {
-		level.Error(a.logger).Log("msg", "invalid url", "url", u, "err", err, "traceID", traceId)
+		level.Error(a.logger).Log("msg", "invalid url", "url", u, "err", err, "TraceId", traceId)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -230,7 +230,7 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 		URL:   parsed.String(),
 		Title: title,
 	}); err != nil {
-		level.Error(a.logger).Log("msg", "error encoding post", "err", err, "traceID", traceId)
+		level.Error(a.logger).Log("msg", "error encoding post", "err", err, "TraceId", traceId)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -238,7 +238,7 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 	db := a.databases[rand.Intn(len(a.databases))].String()
 	req, err := http.NewRequest("POST", db+"/post", &buf)
 	if err != nil {
-		level.Error(a.logger).Log("msg", "error building request", "err", err, "traceID", traceId)
+		level.Error(a.logger).Log("msg", "error building request", "err", err, "TraceId", traceId)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -254,7 +254,7 @@ func (a *app) Post(w http.ResponseWriter, r *http.Request) {
 
 	if resp.StatusCode/100 != 2 {
 		body, _ := ioutil.ReadAll(io.LimitReader(resp.Body, 1024))
-		level.Error(a.logger).Log("msg", "HTTP request failed", "status", resp.StatusCode, "body", body, "traceID", traceId)
+		level.Error(a.logger).Log("msg", "HTTP request failed", "status", resp.StatusCode, "body", body, "TraceId", traceId)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s\n", body)
 		return
@@ -270,14 +270,14 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 	traceId, _ := tracing.ExtractTraceID(r.Context())
 
 	if err := r.ParseForm(); err != nil {
-		level.Error(a.logger).Log("msg", "error parsing form", "err", err, "traceID", traceId)
+		level.Error(a.logger).Log("msg", "error parsing form", "err", err, "TraceId", traceId)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	id, err := strconv.Atoi(r.Form.Get("id"))
 	if err != nil {
-		level.Error(a.logger).Log("msg", "invalid id", "err", err, "traceID", traceId)
+		level.Error(a.logger).Log("msg", "invalid id", "err", err, "TraceId", traceId)
 		http.Error(w, "invalid id", http.StatusBadRequest)
 		return
 	}
@@ -288,7 +288,7 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 	}{
 		ID: id,
 	}); err != nil {
-		level.Error(a.logger).Log("msg", "error encoding post", "err", err, "traceID", traceId)
+		level.Error(a.logger).Log("msg", "error encoding post", "err", err, "TraceId", traceId)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -296,7 +296,7 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 	db := a.databases[rand.Intn(len(a.databases))].String()
 	req, err := http.NewRequest("POST", db+"/vote", &buf)
 	if err != nil {
-		level.Error(a.logger).Log("msg", "error building request", "err", err, "traceID", traceId)
+		level.Error(a.logger).Log("msg", "error building request", "err", err, "TraceId", traceId)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -312,7 +312,7 @@ func (a *app) Vote(w http.ResponseWriter, r *http.Request) {
 
 	if resp.StatusCode/100 != 2 {
 		body, _ := ioutil.ReadAll(io.LimitReader(resp.Body, 1024))
-		level.Error(a.logger).Log("msg", "HTTP request failed", "status", resp.StatusCode, "body", body, "traceID", traceId)
+		level.Error(a.logger).Log("msg", "HTTP request failed", "status", resp.StatusCode, "body", body, "TraceId", traceId)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s\n", body)
 		return
