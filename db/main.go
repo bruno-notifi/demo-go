@@ -123,7 +123,7 @@ func (db *db) handlePanic(next http.Handler) http.Handler {
 func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 	traceId, _ := tracing.ExtractTraceID(r.Context())
 	if c, ok := db.fetches.(prometheus.ExemplarAdder); ok {
-		c.AddWithExemplar(1, prometheus.Labels{"traceID": traceId})
+		c.AddWithExemplar(1, prometheus.Labels{"TraceId": traceId})
 	}
 
 	db.mtx.Lock()
@@ -140,7 +140,7 @@ func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if db.fail {
-		level.Error(db.logger).Log("err", "spline matriculation failed", "traceID", traceId)
+		level.Error(db.logger).Log("err", "spline matriculation failed", "TraceId", traceId)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -169,7 +169,7 @@ func (db *db) Fetch(w http.ResponseWriter, r *http.Request) {
 	}{
 		Links: links,
 	}); err != nil {
-		level.Error(db.logger).Log("msg", "error encoding response", "err", err, "traceID", traceId)
+		level.Error(db.logger).Log("msg", "error encoding response", "err", err, "TraceId", traceId)
 	}
 }
 
@@ -179,13 +179,13 @@ func (db *db) Post(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		elapsed := time.Since(start)
 		if h, ok := db.posts.(prometheus.ExemplarObserver); ok {
-			h.ObserveWithExemplar(elapsed.Seconds(), prometheus.Labels{"traceID": traceId})
+			h.ObserveWithExemplar(elapsed.Seconds(), prometheus.Labels{"TraceId": traceId})
 		}
 	}()
 
 	var link Link
 	if err := json.NewDecoder(r.Body).Decode(&link); err != nil {
-		level.Error(db.logger).Log("msg", "error decoding link", "err", err, "traceID", traceId)
+		level.Error(db.logger).Log("msg", "error decoding link", "err", err, "TraceId", traceId)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -208,7 +208,7 @@ func (db *db) Vote(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		elapsed := time.Since(start)
 		if h, ok := db.votes.(prometheus.ExemplarObserver); ok {
-			h.ObserveWithExemplar(elapsed.Seconds(), prometheus.Labels{"traceID": traceId})
+			h.ObserveWithExemplar(elapsed.Seconds(), prometheus.Labels{"TraceId": traceId})
 		}
 	}()
 
@@ -216,7 +216,7 @@ func (db *db) Vote(w http.ResponseWriter, r *http.Request) {
 		ID int
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		level.Error(db.logger).Log("msg", "error decoding link", "err", err, "traceID", traceId)
+		level.Error(db.logger).Log("msg", "error decoding link", "err", err, "TraceId", traceId)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
